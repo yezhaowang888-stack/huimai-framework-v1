@@ -1,0 +1,499 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\definecolor{huimai-blue}{RGB}{0, 102, 204}
+
+\title{A General-Purpose Agent Collaboration Framework \\
+for Domain-Specific AI Systems: \\
+From Shanzhai Methodology to the Doctor's Framework}
+
+\author{SharpAgent Research \\
+\texttt{research@bio-shandonghuiumai.com}}
+
+\date{June 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present a general-purpose agent collaboration framework designed for 
+constructing domain-specific AI systems, with a validated implementation 
+in clinical decision support. The core contribution is a three-layer 
+agent architecture---strategist, architect, and executor---that formalizes 
+a problem-driven development methodology we term ``Shanzhai with Structure.'' 
+We demonstrate the framework's effectiveness through the Doctor's Framework, 
+a production clinical knowledge system featuring a 68-module knowledge base, 
+a jurisdiction-aware tripartite labeling system (Z0 layer), and a structured 
+guideline index layer (GuideLayer) covering 102 clinical references across 
+26 medical specialties. The system has been deployed in collaboration with 
+a tertiary hospital in China, validating the framework's transition from 
+abstract collaboration model to operational AI infrastructure. We argue 
+that structured agent collaboration, rather than monolithic model training, 
+is the scalable path to domain-specific AI that is auditable, updatable, 
+and jurisdiction-aware.
+\end{abstract}
+
+\section{Introduction}
+
+Large language models (LLMs) have demonstrated remarkable capabilities in 
+general-domain question answering \cite{brown2020language}, but their deployment 
+in high-stakes professional domains remains problematic. Three structural 
+limitations persist: (1) LLMs lack verifiable, updatable domain knowledge 
+bases, operating instead on frozen training corpora; (2) they cannot reliably 
+distinguish jurisdiction-specific standards (e.g., Chinese CSCO guidelines 
+vs. American NCCN guidelines for the same cancer); and (3) they provide no 
+audit trail for clinical decisions, making them legally and ethically 
+untenable in regulated environments.
+
+The prevailing response to these limitations has been to invest in 
+application-specific model fine-tuning, retrieval-augmented generation (RAG) 
+\cite{lewis2020retrieval}, or prompt engineering. These approaches, while 
+valuable, share a common weakness: they embed domain knowledge into model 
+parameters or narrow retrieval pipelines, making systematic updates, 
+jurisdiction switching, and cross-guideline conflict detection fundamentally 
+difficult.
+
+We propose an alternative paradigm: a \textbf{general-purpose agent 
+collaboration framework} that separates domain knowledge from reasoning, 
+and organizes AI system construction around a structured three-layer 
+agent model. This framework is not an application but a \textit{methodology 
+for building applications}---a design pattern for domain-specific AI that 
+prioritizes auditability, updatability, and jurisdiction-awareness over 
+raw generative capability.
+
+\subsection{Contributions}
+
+This paper makes three contributions:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Formalization of the Sharp Framework}: a three-layer agent 
+    collaboration model (strategist, architect, executor) that provides a 
+    reusable architecture for domain-specific AI construction.
+    \item \textbf{The Doctor's Framework}: a complete implementation of the 
+    Sharp Framework in clinical medicine, featuring a 68-module knowledge 
+    base organized in four scientific layers (L1--L4), a jurisdiction-aware 
+    Z0 tripartite labeling layer, and a structured guideline index layer 
+    (GuideLayer) with 102 clinical references across 26 specialties.
+    \item \textbf{Validation}: deployment in collaboration with a tertiary 
+    hospital in Shandong Province, China, demonstrating the framework's 
+    transition from abstract collaboration model to operational clinical 
+    infrastructure.
+\end{enumerate}
+
+\section{The Sharp Framework}
+
+\subsection{Philosophy: ``Shanzhai with Structure''}
+
+The term \textit{Shanzhai} (山寨) carries a specific cultural meaning in 
+Chinese innovation discourse: pragmatic, resource-constrained problem-solving 
+that prioritizes working solutions over theoretical elegance. When 
+structured---paired with clear role boundaries, verification protocols, 
+and systematic knowledge management---this approach becomes a powerful 
+methodology for AI system construction.
+
+The Sharp Framework formalizes this intuition into three design principles:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Problem-driven development}: Build only what the problem 
+    demands. Defer abstraction until pattern recognition is justified by 
+    multiple concrete instances.
+    \item \textbf{Role separation with verification}: Separate strategic 
+    decision-making, architectural coordination, and technical execution 
+    into distinct agent roles with explicit verification at each boundary.
+    \item \textbf{Knowledge externalization}: All domain knowledge lives 
+    in auditable, version-controlled external structures (knowledge bases, 
+    guideline indices, jurisdiction tables) rather than in model parameters.
+\end{enumerate}
+
+\subsection{Three-Layer Agent Architecture}
+
+\begin{figure}[h]
+\centering
+\begin{verbatim}
+Strategic Layer (Human-in-the-loop)
+    ↓  Vision, trust allocation, go/no-go decisions
+Architect Layer (cn001 — coordination agent)
+    ↓  Architecture design, task decomposition, quality control
+Executor Layer (hk001, cn002, ... — specialist agents)
+    ↓  Implementation, testing, cross-review, deployment
+\end{verbatim}
+\caption{The Sharp Framework three-layer agent architecture.}
+\label{fig:three-layer}
+\end{figure}
+
+The three layers operate with clearly defined scopes and verification 
+protocols:
+
+\textbf{Strategic Layer.} A human decision-maker provides vision, domain 
+expertise, and final authority on trust-critical decisions. The strategist 
+does not write code or review architectures---only allocates trust and 
+makes go/no-go judgments. This is not a ceremonial role; it is the 
+locus of ``what should we build'' and ``is this safe to deploy.''
+
+\textbf{Architect Layer.} A coordination agent (cn001) translates strategic 
+intent into technical specifications, decomposes tasks, verifies 
+cross-layer consistency, and maintains the global knowledge architecture. 
+This agent does not execute implementation tasks---only designs, coordinates, 
+and verifies. All communication between layers passes through this agent 
+via a formal inbox protocol.
+
+\textbf{Executor Layer.} Specialist agents (hk001 for cloud operations, 
+cn002 for knowledge base engineering, and others) receive well-defined 
+task specifications from the architect layer, execute implementation, 
+perform cross-review, and report results back through the formal 
+communication channel. Each executor operates within a bounded scope 
+defined by its task contract.
+
+\subsection{Formal Communication Protocol}
+
+To prevent information leakage and role confusion, the Sharp Framework 
+mandates a formal communication protocol:
+
+\begin{itemize}[leftmargin=*]
+    \item All inter-agent communication passes through designated inbox 
+    directories (local filesystem for co-located agents, SCP for remote agents).
+    \item Each message follows a standardized format: sender, recipient, 
+    task ID, payload, verification criteria.
+    \item No agent may access another agent's filesystem or working directory.
+    \item After message delivery, the sender notifies the recipient via an 
+    agreed side channel.
+\end{itemize}
+
+This protocol is not an optimization---it is a safety boundary. By making 
+all communication explicit, auditable, and replayable, we eliminate the 
+class of errors caused by implicit assumptions about what another agent 
+``knows'' or ``has done.''
+
+\section{The Doctor's Framework: A Validated Implementation}
+
+The Doctor's Framework is a complete instantiation of the Sharp Framework 
+for clinical decision support. It is not a model---it is a system 
+architecture that orchestrates knowledge retrieval, jurisdiction-aware 
+reasoning, and guideline-aware recommendation.
+
+\subsection{Knowledge Architecture}
+
+\begin{figure}[h]
+\centering
+\begin{verbatim}
+┌─────────────────────────────────────────────┐
+│              Knowledge Base (68 modules)     │
+│  L1: Basic Sciences (8)    Anatomy, Biochem  │
+│  L2: Core Applications (13)  Pathophys, Pharm│
+│  L3: Clinical Cover (21)   Emergency, Surg   │
+│  L4: Prospective (7)       AI Dx, Genomics   │
+│  T:  Traditional Medicine (13)  TCM, Ayurveda│
+│  E:  Environmental Exposure (6)  NBC Warfare │
+├─────────────────────────────────────────────┤
+│         Z0: Jurisdiction Layer               │
+│  Tripartite Label: [T_bio, T_timeline, T_medhist] │
+│  Migration Baseline Function                 │
+├─────────────────────────────────────────────┤
+│         GuideLayer: Guideline Index          │
+│  102 clinical references, 26 specialties     │
+│  Jurisdiction-tagged, cross-referenced       │
+│  Physically isolated from Knowledge Base     │
+└─────────────────────────────────────────────┘
+\end{verbatim}
+\caption{The Doctor's Framework knowledge architecture.}
+\label{fig:knowledge}
+\end{figure}
+
+The knowledge architecture is organized in four distinct layers, each 
+with a clearly defined scope:
+
+\textbf{L1--L4: Scientific Knowledge Base.} The core scientific knowledge 
+is organized in four layers of increasing clinical specificity. L1 covers 
+basic sciences (biochemistry, genomics, immunology); L2 covers core 
+clinical applications (pathophysiology, pharmacology); L3 covers clinical 
+specialties (emergency medicine, surgery, pediatrics); L4 covers prospective 
+domains (AI-assisted diagnosis, pharmacogenomics). Additionally, T covers 
+traditional medicine systems from 12 cultural traditions, and E covers 
+environmental and occupational exposure.
+
+Critically, the knowledge base contains \textbf{no clinical guidelines}. 
+It stores scientific facts---anatomy, physiology, pathology, pharmacology, 
+epidemiology---that are globally valid and jurisdiction-independent.
+
+\textbf{Z0: Jurisdiction Layer.} Before any clinical query reaches the 
+knowledge base, it passes through Z0, which constructs a tripartite label:
+\begin{equation}
+\text{Label} = [T_{\text{bio}}, T_{\text{timeline}}, T_{\text{medhist}}]
+\end{equation}
+where $T_{\text{bio}}$ encodes the patient's biological jurisdiction 
+(genetic ancestry, birthplace), $T_{\text{timeline}}$ encodes migration 
+history and residence duration, and $T_{\text{medhist}}$ encodes the 
+jurisdictional origin of past medical interventions.
+
+Z0 also implements a \textbf{migration baseline function} that models how 
+physiological parameters drift when a patient moves between jurisdictions. 
+For example, a patient of Chinese ancestry who has lived in the United 
+States for 15 years will have BMI thresholds, salt intake baselines, and 
+vitamin D reference ranges that are partially Chinese, partially American, 
+and time-dependent.
+
+\textbf{GuideLayer.} Clinical guidelines (CSCO, NCCN, ESC, expert consensus 
+documents) are stored in a physically separate index, tagged by jurisdiction, 
+and cross-referenced for conflicts. The GuideLayer contains 102 structured 
+records across 26 specialties at the time of writing. When the system 
+generates a recommendation, it explicitly cites which guideline(s) informed 
+it, what jurisdiction they apply to, and whether conflicting guidance 
+exists in other jurisdictions.
+
+The physical separation of GuideLayer from the knowledge base is a 
+deliberate architectural decision. Guidelines are \textit{interpretations} 
+of science within a specific regulatory and cultural context---not science 
+itself. Mixing them would pollute the globally valid knowledge base with 
+jurisdiction-specific opinions.
+
+\subsection{Clinical Workflow}
+
+A typical clinical query follows this path:
+
+\begin{enumerate}[leftmargin=*]
+    \item Patient data enters through a standardized questionnaire 
+    (jurisdiction-relevant questions only).
+    \item Z0 constructs the tripartite label and computes the mixed 
+    jurisdiction weight vector.
+    \item The knowledge index retrieves relevant modules by symptom and 
+    disease matching.
+    \item The GuideLayer retrieves applicable guidelines filtered by the 
+    patient's jurisdiction vector.
+    \item The system generates a recommendation with explicit citation 
+    of (a) which scientific modules informed the reasoning, (b) which 
+    guidelines were applied, and (c) what jurisdiction they represent.
+\end{enumerate}
+
+The output is not a black-box prediction---it is a structured, auditable 
+recommendation that a human physician can verify against the cited sources.
+
+\subsection{GuideLayer: A Structured Guideline Index}
+
+The GuideLayer represents a methodological innovation in clinical AI: a 
+jurisdiction-tagged, cross-referenced index of clinical practice guidelines 
+maintained separately from scientific knowledge.
+
+At the time of writing, the GuideLayer contains 102 records, including:
+
+\begin{itemize}[leftmargin=*]
+    \item 7 CSCO (Chinese Society of Clinical Oncology) guidelines for 
+    major cancer types, with full structured extraction of staging systems, 
+    first-line and second-line regimens, and cross-references to NCCN/ESMO 
+    guidelines.
+    \item 4 Chinese Medical Association clinical guidelines and expert 
+    consensus documents.
+    \item 87 additional Chinese expert consensus documents indexed by 
+    title, society, year, and specialty.
+    \item 4 hospital formulary records from tertiary hospitals in Shandong 
+    Province.
+\end{itemize}
+
+Each guideline record includes: a unique jurisdiction-tagged ID, the 
+issuing society, disease scope, year, evidence grading system, structured 
+treatment recommendations (regimen, biomarker, evidence level, clinical 
+trial reference), and cross-references marking conflicts and alignments 
+with guidelines from other jurisdictions.
+
+The GuideLayer is designed for incremental maintenance: as guidelines are 
+updated annually, new records supersede old ones while preserving the 
+update history, creating a longitudinal record of clinical consensus 
+evolution.
+
+\subsection{Technical Implementation}
+
+The system is implemented as a Python/FastAPI backend with a pure HTML 
+frontend (no framework dependency), deployed on Alibaba Cloud ECS behind 
+Cloudflare Tunnel. The knowledge index uses substring sliding-window 
+matching augmented with a disease-specific terminology dictionary. 
+
+The software architecture follows the Sharp Framework's role separation:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Strategist (Lao Wang)}: clinical domain validation, 
+    hospital partnership, go/no-go decisions on deployment.
+    \item \textbf{Architect (cn001)}: knowledge architecture design, 
+    Guideline index maintenance, quality verification of extractions.
+    \item \textbf{Executor (cn002)}: knowledge base module authoring, 
+    benchmark testing, OCR pipeline for guideline digitization.
+    \item \textbf{Executor (hk001)}: cloud deployment, API stability, 
+    cross-review of extracted content.
+\end{itemize}
+
+\subsection{Benchmark Results}
+
+The knowledge retrieval system was benchmarked on a set of clinical 
+queries spanning all 68 knowledge modules. Initial results showed a 
+retrieval hit rate of 13\%, which after three rounds of pipeline debugging 
+improved to 76.7\% (content-level hit rate). The remaining 23.3\% gap is 
+concentrated in 10 modules (4 respiratory/emergency, 6 others) that require 
+additional content authoring.
+
+The three root causes identified and fixed during benchmarking illustrate 
+the framework's strength: (1) a Unicode ghost character in the API key 
+causing silent degradation; (2) a path break in the local content pipeline 
+where distilled module content was read but never passed to the LLM; and 
+(3) a Chinese text matching algorithm that required substring sliding-window 
+replacement. Each failure mode was traced to a specific architectural 
+component, fixed, and verified---an audit trail impossible in monolithic 
+fine-tuned models.
+
+\subsection{Structured Knowledge Extraction Pipeline}
+
+A production-grade OCR pipeline was developed using Tencent Cloud's 
+GeneralBasicOCR API (TC3-HMAC-SHA256 signing). The pipeline processed 
+181 source files (143 DOCX with 1,206 embedded images, 7 PDFs totaling 
+1,317 pages, 9 WeChat screenshots, and 10 Excel/PPT files) across three
+batches, producing 998 OCR calls with a 97\% success rate, yielding
+2,548,459 characters of structured clinical text spanning CSCO oncology
+guidelines, CMA clinical practice guidelines, and pharmaceutical formulary
+data. An additional 79 WeChat-sourced pharmaceutical screenshots were
+processed to recover drug catalogue data blocked by WeChat anti-scraping,
+demonstrating the framework's resilience to real-world data acquisition
+barriers.
+
+\subsection{Pharmaceutical Knowledge Base}
+
+A structured drug knowledge base was constructed covering 3,369 drug
+records from 11 rounds of Chinese national centralized procurement
+(spanning batch 1 through 10, plus the insulin special procurement),
+merged with hospital drug formularies from Tai'an Central Hospital,
+Jining First People's Hospital, and Linyi People's Hospital.
+Each record includes generic name, dosage form, specifications,
+manufacturer, procurement batch, and pricing data.
+
+\subsection{Standard Alignment Audit}
+
+A comprehensive gap audit was conducted against two recently published
+Chinese national consensus documents on AI-enabled laboratory report
+interpretation: (1) the Expert Consensus on Intelligent Agent-Based
+Laboratory Report Interpretation (2026), and (2) the Expert Consensus on
+Standard Dataset Elements for Medical Laboratory Science (2026). The
+audit confirmed that the Doctor's Framework's Five-Element Audit System
+(Reviewer-Auditor Verifier Calibration Chain) exceeds the consensus
+requirement for human-in-the-loop design through its independent reviewer
+bias coefficient. Two critical gaps were identified---LOINC/UCUM/SNOMED
+CT/FHIR international standard mapping and data privacy governance---now
+scheduled for v0.4 implementation.
+
+\section{Related Work}
+
+\textbf{Agent Frameworks.} AutoGen \cite{wu2023autogen}, CrewAI, and 
+LangGraph provide general-purpose multi-agent orchestration. The Sharp 
+Framework differs in emphasizing role separation with explicit 
+verification boundaries and a formal communication protocol, making it 
+more suitable for regulated domains.
+
+\textbf{Clinical AI.} Med-PaLM 2 \cite{singhal2023towards} and GPT-4-based 
+clinical systems demonstrate impressive generative capabilities but suffer 
+from the jurisdiction-ambiguity problem: they cannot reliably distinguish 
+CSCO from NCCN guidelines. Retrieval-augmented approaches \cite{zhu2024rag} 
+partially address this but typically embed retrieval into model pipelines 
+rather than maintaining a separate, auditable knowledge architecture.
+
+\textbf{Knowledge-Grounded Systems.} The separation of knowledge from 
+reasoning has been advocated in symbolic AI \cite{lenat1990cyc} and 
+more recently in neuro-symbolic systems \cite{garcez2020neurosymbolic}. 
+The Doctor's Framework contributes a practical instantiation of this 
+principle in a deployed clinical system with a concrete knowledge 
+architecture and a validated retrieval pipeline.
+
+\section{Limitations and Future Work}
+
+\textbf{Knowledge Coverage.} The 68-module knowledge base, while 
+comprehensive in structure, has uneven content depth across modules. 
+Ten modules remain below the 70\% hit rate threshold and require 
+additional content authoring by domain specialists.
+
+\textbf{Guideline Completeness.} The GuideLayer currently covers Chinese
+(CN) clinical guidelines (181 source files processed via OCR, 102
+indexed guideline records in index.json with 11 deep-extracted CSCO
+oncology + CMA guideline full texts). US (NCCN), European (ESC/ESMO),
+Japanese, and Southeast Asian guidelines are planned but not yet indexed.
+Concurrently, a pharmaceutical knowledge base of 3,369 drug records from
+11 rounds of national centralized procurement has been constructed, with
+top-200 package insert extraction (indications, dosage, contraindications)
+underway for clinical decision support augmentation.
+
+\textbf{Evaluation.} The current evaluation is limited to retrieval
+accuracy benchmarks. Clinical outcome evaluation through the hospital
+partnership is planned but has not yet been conducted. An independent
+gap audit against two national AI-in-laboratory-medicine consensus
+documents has been completed, confirming human-in-the-loop compliance
+and identifying LOINC/UCUM/SNOMED CT mapping as the top priority for
+hospital integration.
+
+\textbf{Scaling.} The framework's reliance on human strategist input 
+and formal communication protocols limits the number of concurrent 
+projects. Formal verification of the communication protocol and 
+partial automation of the architect layer are directions for future 
+work.
+
+\section{Conclusion}
+
+We have presented the Sharp Framework, a general-purpose agent 
+collaboration methodology for domain-specific AI construction, and its 
+validated implementation in the Doctor's Framework for clinical decision 
+support. The key architectural insight is the separation of scientific 
+knowledge, jurisdiction-specific parameters, and clinical practice 
+guidelines into three physically distinct layers, each with its own 
+maintenance cadence and verification protocol. This architecture enables 
+a clinical AI system that is auditable (every recommendation cites its 
+sources), updatable (guidelines and knowledge modules can be revised 
+independently), and jurisdiction-aware (the same disease query produces 
+different, appropriately localized recommendations for patients from 
+different jurisdictions).
+
+The Sharp Framework is not a product---it is a design pattern. Its value 
+lies in its replicability: the same three-layer agent architecture, 
+formal communication protocol, and knowledge externalization principles 
+can be applied to construct domain-specific AI systems in law, finance, 
+engineering, and any other regulated professional domain where 
+auditability and jurisdiction-awareness matter.
+
+\section*{Acknowledgments}
+
+We thank the Department of Respiratory Medicine at the partner hospital 
+in Shandong Province for clinical domain validation. We acknowledge the 
+contributions of cn002 for knowledge base engineering and benchmark 
+methodology, and hk001 for cloud infrastructure and cross-review.
+
+\begin{thebibliography}{99}
+
+\bibitem{brown2020language}
+T.~Brown et al., ``Language Models are Few-Shot Learners,'' in 
+\textit{NeurIPS}, 2020.
+
+\bibitem{lewis2020retrieval}
+P.~Lewis et al., ``Retrieval-Augmented Generation for Knowledge-Intensive 
+NLP Tasks,'' in \textit{NeurIPS}, 2020.
+
+\bibitem{wu2023autogen}
+Q.~Wu et al., ``AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent 
+Conversation,'' \textit{arXiv:2308.08155}, 2023.
+
+\bibitem{singhal2023towards}
+K.~Singhal et al., ``Towards Expert-Level Medical Question Answering with 
+Large Language Models,'' \textit{arXiv:2305.09617}, 2023.
+
+\bibitem{zhu2024rag}
+Y.~Zhu et al., ``A Survey of Retrieval-Augmented Generation for Large 
+Language Models,'' \textit{arXiv:2312.10997}, 2024.
+
+\bibitem{lenat1990cyc}
+D.~B.~Lenat and R.~V.~Guha, \textit{Building Large Knowledge-Based Systems: 
+Representation and Inference in the Cyc Project}. Addison-Wesley, 1990.
+
+\bibitem{garcez2020neurosymbolic}
+A.~d'Avila Garcez and L.~C.~Lamb, ``Neurosymbolic AI: The 3rd Wave,'' 
+\textit{arXiv:2012.05876}, 2020.
+
+\end{thebibliography}
+
+\end{document}
